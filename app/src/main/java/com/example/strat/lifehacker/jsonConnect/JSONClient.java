@@ -1,5 +1,8 @@
 package com.example.strat.lifehacker.jsonConnect;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.example.strat.lifehacker.model.News;
@@ -26,9 +29,23 @@ import java.util.ArrayList;
 public class JSONClient extends AsyncTask<Void, Void, ArrayList<News>> {
 
     private String urlS = "https://public-api.wordpress.com/rest/v1.1/sites/lifehacker.ru/posts/?number=10";
-    BufferedReader reader;
-    HttpURLConnection urlConnection;
-    String resultJson = "";
+    private BufferedReader reader;
+    private HttpURLConnection urlConnection;
+    private String resultJson = "";
+    private ProgressDialog progressDialog;
+
+    public JSONClient(Context ctx) {
+        progressDialog = new ProgressDialog(ctx);
+    }
+
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progressDialog.setMessage("Lodaing...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+    }
 
     @Override
     protected ArrayList<News> doInBackground(Void... params) {
@@ -64,6 +81,7 @@ public class JSONClient extends AsyncTask<Void, Void, ArrayList<News>> {
     @Override
     protected void onPostExecute(ArrayList<News> newses) {
         super.onPostExecute(newses);
+        progressDialog.dismiss();
     }
 
     private ArrayList<News> getInformation(String json) {
@@ -97,7 +115,9 @@ public class JSONClient extends AsyncTask<Void, Void, ArrayList<News>> {
         }
     }
 
+    //    не работает, ибо меняют размеры как хотят
     private String changeSizeImg(String str) {
         return str.substring(0, str.length() - 4) + "-630x315.png";
     }
+
 }
